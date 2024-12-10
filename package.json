@@ -1,0 +1,17 @@
+{
+  "name": "stock-market-api-2.0",
+  "version": "2.0.0",
+  "description": "venezuelan stock market api ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "stock",
+    "market",
+    "api"
+  ],
+  "type": "module",
+  "author": "quikiesamus",
+  "license": "UNLICENSED"
+}
