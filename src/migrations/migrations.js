@@ -3,7 +3,7 @@ import { getConnection } from "../database/database.js";
 function createTableMoneda() {
     const sql = `CREATE TABLE IF NOT EXISTS Monedas (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                symbol TEXT NOT NULL
+                symbol TEXT NOT NULL UNIQUE
             )`;
     return sql;
 }
@@ -11,7 +11,8 @@ function createTableMoneda() {
 function createTableEmpresa() {
     const sql = `CREATE TABLE IF NOT EXISTS Empresas (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT NOT NULL,
+                name TEXT NOT NULL UNIQUE,
+                symbol TEXT NOT NULL UNIQUE,
                 isin TEXT NOT NULL,
                 status INTEGER NOT NULL,
                 accCirc TEXT NOT NULL DEFAULT 0,
@@ -33,7 +34,7 @@ function createTableUpdates() {
 }
 
 function createTableLastUpdatedAt() {
-    const sql = `CREATE TABLE IF NOT EXISTS UpdateHistory (
+    const sql = `CREATE TABLE IF NOT EXISTS LastUpdatedAt (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 dateHour TEXT NOT NULL,
                 idEmpresa INTEGER NOT NULL,
