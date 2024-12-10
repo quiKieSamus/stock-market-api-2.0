@@ -16,6 +16,7 @@ function createTableEmpresa() {
                 isin TEXT NOT NULL,
                 status INTEGER NOT NULL,
                 accCirc TEXT NOT NULL DEFAULT 0,
+                iconURL TEXT NOT NULL DEFAULT "N/A",
                 idCurrency INTEGER NOT NULL,
                 FOREIGN KEY(idCurrency)  REFERENCES Monedas(id)
             )`;

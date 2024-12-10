@@ -11,6 +11,7 @@ const PROP_LIST = [
     "symbol",
     "status",
     "accCirc",
+    "iconURL",
     "idCurrency",
 ];
 

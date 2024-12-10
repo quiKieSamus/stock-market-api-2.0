@@ -79,3 +79,5 @@ export async function fetchCompanyPriceHistory(
         console.error(e);
     }
 }
+
+console.log(await fetchSimboloEmisora("BNC"));

@@ -1,3 +1,5 @@
+import { DateTime } from "luxon";
+
 /**
  * @param {unknown} input
  * @returns {FormData}
@@ -34,3 +36,11 @@ export function objectHasAllProperties(inputObject, propList) {
     }
     return true;
 }
+
+export function getTimeFormatted(inputDate = "") {
+    const format = "yyyy-LL-dd hh:mm:ss"
+    if (inputDate) return DateTime.fromFormat(inputDate, "yyyy-LL-dd").toFormat(format)
+    return DateTime.now().toFormat(format);
+}
+
+console.log(getTimeFormatted());
