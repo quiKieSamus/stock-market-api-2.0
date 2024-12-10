@@ -13,5 +13,8 @@
   ],
   "type": "module",
   "author": "quikiesamus",
-  "license": "UNLICENSED"
+  "license": "UNLICENSED",
+  "dependencies": {
+    "sqlite3": "^5.1.7"
+  }
 }

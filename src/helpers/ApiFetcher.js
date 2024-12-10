@@ -38,8 +38,12 @@ export async function fetchSimboloEmisora(simbolo = "ABC.B") {
             },
         });
         const json = await res.json();
-        if (!json.success) throw new Error("Not the response you were expecting");
-        if (!("response" in json)) throw new Error("Not the response you were expecting");
+        if (!json.success) {
+            throw new Error("Not the response you were expecting");
+        }
+        if (!("response" in json)) {
+            throw new Error("Not the response you were expecting");
+        }
         return json.response;
     } catch (e) {
         console.error(e);
@@ -49,7 +53,28 @@ export async function fetchSimboloEmisora(simbolo = "ABC.B") {
 export async function fetchEmpresa(simbolo = "ABC.B") {
     try {
         const simboloEmisora = await fetchSimboloEmisora(simbolo);
-        return ("cur_encab_simb_rv" in simboloEmisora) ? simboloEmisora?.cur_encab_simb_rv : {};
+        return ("cur_encab_simb_rv" in simboloEmisora)
+            ? simboloEmisora?.cur_encab_simb_rv
+            : {};
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+export async function fetchCompanyPriceHistory(
+    simbolo = "ABC.B",
+    currentSession = false,
+) {
+    try {
+        const simboloEmisora = await fetchSimboloEmisora(simbolo);
+        if (currentSession) {
+            return ("cur_grf_sesion_rv" in simboloEmisora)
+                ? simboloEmisora.cur_grf_sesion_rv
+                : [];
+        }
+        return ("cur_grf_anual_pre_rv" in simboloEmisora)
+            ? simboloEmisora.cur_grf_anual_pre_rv
+            : [];
     } catch (e) {
         console.error(e);
     }
