@@ -25,6 +25,16 @@ export async function getEmpresa(id) {
     }
 }
 
+export async function getAllEmpresas() {
+    try {
+        const sql = `SELECT * FROM Empresas`;
+        const db = getConnection();
+        return await executePreparedStatement(sql, [], db);
+    } catch (e) {
+        console.error(e);
+    }
+}
+
 export async function insertEmpresa(data) {
     try {
         if (objectHasAllProperties(data, PROP_LIST)) {

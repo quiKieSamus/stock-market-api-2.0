@@ -61,6 +61,24 @@ export async function fetchEmpresa(simbolo = "ABC.B") {
     }
 }
 
+export async function fetchAllEmpresas() {
+    try {
+        const formData = makeFormDataBasedOnObject({action: "get_cotizaciones"});
+        const res = await fetch(`${API_URL}`, {
+            method:"post",
+            body: formDataToString(formData),
+            headers: {
+                "content-type": "application/x-www-form-urlencoded; charset=utf-8"
+            }
+        });
+        const json = await res.json();
+        if (!json.response) throw new Error("Not the response you were expecting");
+        return json.response;
+    } catch (e) {
+        console.error(e);
+    }
+}
+
 export async function fetchCompanyPriceHistory(
     simbolo = "ABC.B",
     currentSession = false,
@@ -79,5 +97,3 @@ export async function fetchCompanyPriceHistory(
         console.error(e);
     }
 }
-
-console.log(await fetchSimboloEmisora("BNC"));
