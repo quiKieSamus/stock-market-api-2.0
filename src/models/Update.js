@@ -12,7 +12,7 @@ export async function insertUpdate(data) {
         if (objectHasAllProperties(data, PROP_LIST)) {
             const sql =
                 `INSERT INTO Updates (dateHour, price, idEmpresa) VALUES (?,?,?)`;
-            const time = getTimeFormatted();
+            const time = data?.dateHour ?? getTimeFormatted();
             const db = getConnection();
             return await executePreparedStatement(sql, [time, data.price, data.idEmpresa], db);
         }

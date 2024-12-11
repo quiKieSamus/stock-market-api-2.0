@@ -1,37 +1,76 @@
-import { fetchAllEmpresas, fetchSimboloEmisora } from "./src/helpers/ApiFetcher.js";
-import { getAllEmpresas } from "./src/models/Empresa.js";
-import { getAllMonedas } from "./src/models/Moneda.js";
+import { fetchAllEmpresas, fetchCompanyPriceHistory, fetchSimboloEmisora } from "./src/helpers/ApiFetcher.js";
+import { getAllEmpresas, insertEmpresa } from "./src/models/Empresa.js";
+import { getAllMonedas, insertMoneda } from "./src/models/Moneda.js";
+import { insertUpdate } from "./src/models/Update.js";
 
 /**
- * 1. Get All empresas
- * 2. Loop through array and get latest values
- * 3. Update
+ * 
  */
-async function main() {
+async function daemonEmpresas() {
     try {
         const empresas = await fetchAllEmpresas();
-        const monedas = await getAllMonedas();
-        /**
-         * @type {Promise[]}
-        */
-        const symbolPromises = empresas.map((empresa) => {
-            const simbolo = empresa.COD_SIMB;
-            return fetchSimboloEmisora(simbolo);
-        });
-        (await Promise.all(symbolPromises)).forEach(async (resolved) => {
-            const lastPrice = Number(resolved?.cur_precio_var_rv[0]?.PRECIO_ULT);
-            const symbol = resolved.cur_encab_simb_rv[0]?.COD_SIMB;
-            const currencySymbol = resolved?.cur_encab_simb_rv[0]?.MONEDA;
-            const historyPrices = resolved?.cur_grf_anual_pre_rv;
-            const empresasFromDb = await getAllEmpresas();
-            empresasFromDb.forEach(empresa => {
-                const id = empresa.id;
-                const currency = monedas.find(moneda => moneda.symbol == currencySymbol);
-            });
+        const empresasFromDb = await getAllEmpresas();
+        let monedas = await getAllMonedas();
+        empresas.forEach(async (empresa) => {
+            const symbol = empresa.COD_SIMB;
+            const simboloEmisora = await fetchSimboloEmisora(symbol);
+
+            if (!simboloEmisora?.cur_encab_simb_rv[0]) {
+                // empresa es undefined
+                console.log("Empresa de simbolo", symbol, "no pudo tener su data extraída");
+                console.log(empresa);
+                return
+            };
+
+            if (!monedas.find((moneda) => moneda?.symbol?.toLowerCase() == simboloEmisora?.cur_encab_simb_rv[0]?.MONEDA?.toLowerCase())) {
+                // registrar moneda que no existe
+                await insertMoneda({ symbol: simboloEmisora?.cur_encab_simb_rv[0]?.MONEDA });
+                // execute again;
+                monedas = await getAllMonedas();
+            }
+
+            const moneda = monedas.find((monedaItem) => monedaItem?.symbol?.toLowerCase() == simboloEmisora?.cur_encab_simb_rv[0]?.MONEDA?.toLowerCase());
+
+            if (!empresasFromDb.find((empresa) => symbol == empresa.symbol)) {
+                // registrar empresa que no existe
+                const empresaDataFromApi = simboloEmisora.cur_encab_simb_rv;
+                console.log("Registrando nueva empresa en base a estos datos", empresaDataFromApi);
+                await insertEmpresa({
+                    name: empresaDataFromApi[0].DESC_SIMB,
+                    isin: empresaDataFromApi[0].COD_ISIN,
+                    symbol: empresaDataFromApi[0].COD_SIMB,
+                    status: empresaDataFromApi[0].ESTATUS == "ACTIVO" ? 1 : 0,
+                    accCirc: empresaDataFromApi[0].ACC_CIRC,
+                    iconURL: "N/A",
+                    idCurrency: moneda?.id
+                });
+            }
         });
     } catch (e) {
         console.error(e);
     }
 }
 
-main();
+async function daemonPrices() {
+    try {
+        const empresas = await getAllEmpresas();
+        empresas.forEach(async (empresa) => {
+            const empresaDataFromAPi = await fetchSimboloEmisora(empresa?.symbol);
+            if (!Array.isArray(empresaDataFromAPi?.cur_precio_var_rv)) {
+                console.log("Parece que no hay data de precios");
+                return;
+            }
+            console.log("Actualizando precio para la empresa: ", empresa.name);
+            insertUpdate({ price: empresaDataFromAPi?.cur_precio_var_rv[0]?.PRECIO_ULT, idEmpresa: empresa.id });
+        });
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+async function main() {
+    await daemonEmpresas();
+    await daemonPrices();
+}
+
+await main()

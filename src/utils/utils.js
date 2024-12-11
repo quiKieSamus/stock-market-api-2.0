@@ -43,4 +43,6 @@ export function getTimeFormatted(inputDate = "") {
     return DateTime.now().toFormat(format);
 }
 
-console.log(getTimeFormatted());
+export function convertDateFromFormatToFormat(date, luxonFromFormat, luxonToFormat) {
+    return DateTime.fromFormat(date, luxonFromFormat).toFormat(luxonToFormat);
+}

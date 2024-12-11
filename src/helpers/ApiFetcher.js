@@ -36,6 +36,7 @@ export async function fetchSimboloEmisora(simbolo = "ABC.B") {
                 "content-type":
                     "application/x-www-form-urlencoded; charset=utf-8",
             },
+            signal: AbortSignal.timeout(1000*60)
         });
         const json = await res.json();
         if (!json.success) {
@@ -85,6 +86,7 @@ export async function fetchCompanyPriceHistory(
 ) {
     try {
         const simboloEmisora = await fetchSimboloEmisora(simbolo);
+        if (!simboloEmisora) throw new Error("Looks like the Company has no data");
         if (currentSession) {
             return ("cur_grf_sesion_rv" in simboloEmisora)
                 ? simboloEmisora.cur_grf_sesion_rv

@@ -40,11 +40,12 @@ export async function insertEmpresa(data) {
         if (objectHasAllProperties(data, PROP_LIST)) {
             if ((await getMoneda(data.idCurrency)).length <= 0) throw new Error("Moneda doesn't exists");
             const sql =
-                `INSERT INTO Empresas (name, isin, status, accCirc, idCurrency) VALUES (?, ?, ?, ?, ?)`;
+                `INSERT INTO Empresas (name, isin, status, accCirc, idCurrency, symbol) VALUES (?, ?, ?, ?, ?, ?)`;
             const db = getConnection();
-            return await executePreparedStatement(sql, [data.name, data.isin, data.status, data.accCirc, data.idCurrency], db);
+            return await executePreparedStatement(sql, [data.name, data.isin, data.status, data.accCirc, data.idCurrency, data.symbol], db);
         }
     } catch (e) {
         console.log(e);
     }
 }
+
