@@ -34,3 +34,23 @@ export async function getAllUpdates(idEmpresa) {
         console.error(e);
     }
 }
+
+export async function getAllUpdatesByEmpresa() {
+    try {
+        const allUpdates = await getAllUpdates();
+        const empresasIds = [];
+        allUpdates.forEach((update) => {
+            if (!empresasIds.includes(update.idEmpresa)) empresasIds.push(update.empresasIds);
+        });
+
+        return empresasIds.map((id) => {
+            const empresaUpdates = allUpdates.filter((update) => update.idEmpresa == id);
+            return {
+                idEmpresa: id,
+                updates: empresaUpdates
+            }
+        })
+    } catch (e) {
+        console.error(e);
+    }
+}
