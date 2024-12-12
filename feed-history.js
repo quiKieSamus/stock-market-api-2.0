@@ -12,9 +12,9 @@ try {
         const empresaDataFromAPi = await fetchCompanyPriceHistory(
             empresa.symbol,
         );
+        console.log(empresaDataFromAPi);
         setTimeout(() => {
             empresaDataFromAPi.forEach(async (priceData) => {
-                console.log(empresa, priceData);
                 const formatDate = convertDateFromFormatToFormat(
                     priceData.FEC,
                     "dd/LL/yy",

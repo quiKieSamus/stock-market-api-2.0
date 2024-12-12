@@ -73,4 +73,10 @@ async function main() {
     await daemonPrices();
 }
 
-await main()
+setInterval(async () => {
+    try {
+        await main();
+    } catch (e) {
+        console.log(e);
+    }
+}, 1000 * 60 * 60);
