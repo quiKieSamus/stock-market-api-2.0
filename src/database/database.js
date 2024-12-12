@@ -18,6 +18,8 @@ export function executePreparedStatement(sql, params = [], db) {
         const stmt = db.prepare(sql, params);
         stmt.all([], (err, rows) => {
             if (err) throw err;
+            stmt.finalize((err) => err ? console.log("Error when trying to finalize stmt", err) : false);
+            db.close((err) => err ? console.log("Error when trying to close connection", err) : false)
             return res(rows);
         });
     });

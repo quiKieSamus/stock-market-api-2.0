@@ -9,16 +9,25 @@ try {
     const empresasFromDB = await getAllEmpresas();
 
     empresasFromDB.forEach(async (empresa) => {
-        const empresaDataFromAPi = await fetchCompanyPriceHistory(empresa.symbol);
-        empresaDataFromAPi.forEach(async (priceData) => {
-            console.log(empresa, priceData);
-            const formatDate = convertDateFromFormatToFormat(priceData.FEC, "dd/LL/yy", "yyyy-LL-dd")
-            setTimeout(() => {
-                insertUpdate({ price: priceData.PRECIO_CIE, dateHour: formatDate, idEmpresa: empresa.id });
-            }, 30000);
-        });
+        const empresaDataFromAPi = await fetchCompanyPriceHistory(
+            empresa.symbol,
+        );
+        setTimeout(() => {
+            empresaDataFromAPi.forEach(async (priceData) => {
+                console.log(empresa, priceData);
+                const formatDate = convertDateFromFormatToFormat(
+                    priceData.FEC,
+                    "dd/LL/yy",
+                    "yyyy-LL-dd",
+                );
+                await insertUpdate({
+                    price: priceData.PRECIO_CIE,
+                    dateHour: formatDate,
+                    idEmpresa: empresa.id,
+                });
+            });
+        }, 1000);
     });
 } catch (e) {
     console.error(e);
 }
-
