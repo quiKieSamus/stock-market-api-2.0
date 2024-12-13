@@ -27,7 +27,7 @@ export class EmpresaController {
                     updates: {
                         updatesSorted: updatesSorted,
                         closing: newestUpdate ?? {},
-                        beginning: secondNewestUpdate[secondNewestUpdate.length - 1]
+                        beginning: secondNewestUpdate[secondNewestUpdate.length - 1] ?? newestUpdate
                     }
                 }
             });
