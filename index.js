@@ -13,5 +13,5 @@ app.use((req, res, next) => {
 app.use("/updates", router);
 app.use("/empresas", empresaRouter);
 app.listen(config.app.port, (err) => {
-    console.log("app in port 8000");
+    console.log(`app in port ${config.app.port}`);
 });
