@@ -73,6 +73,12 @@ async function main() {
     await daemonPrices();
 }
 
+try {
+    await main();
+} catch (e) {
+    console.log(e);
+}
+
 setInterval(async () => {
     try {
         await main();
