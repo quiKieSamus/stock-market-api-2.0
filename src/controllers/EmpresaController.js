@@ -3,6 +3,12 @@ import { getAllUpdates } from "../models/Update.js";
 import { areDatesStringEqual, getClosestDateFromList, getTimeFormatted, substractDaysFromDate } from "../utils/utils.js";
 
 export class EmpresaController {
+    /**
+     * /empresas
+     * @param {*} req 
+     * @param {*} res 
+     * @returns 
+     */
     static async get(req, res) {
         try {
             const empresas = await getAllEmpresas();
@@ -10,11 +16,26 @@ export class EmpresaController {
             if (!req.query.simbolo) {
                 return res.json(empresas);
             }
-            return res.json(empresas.filter((empresa) => empresa.empresa.symbol == req.query.simbolo));
+
+            const filterEmpresa = empresas.find((empresa) => empresa.symbol == req.query.simbolo);
+
+            if (!filterEmpresa) {
+                res.type("text");
+                return res.status(404).send("Not found");
+            }
+            return res.json(filterEmpresa);
         } catch (err) {
-            return res.status(500).send(`Error in server ${err}`);
+            console.error(err);
+            res.type("text");
+            return res.status(500).send(`Error in server`);
         }
     }
+    /**
+     * /empresas/precios
+     * @param {*} req 
+     * @param {*} res 
+     * @returns 
+     */
     static async getPrecios(req, res) {
         try {
             const empresas = await getAllEmpresas();
@@ -53,7 +74,9 @@ export class EmpresaController {
             }
             return res.json(empresasWithLastPrices.filter((empresaUpdate) => empresaUpdate.empresa.symbol == req.query.simbolo));
         } catch (err) {
-            return res.status(500).send(`Error in server ${err}`);
+            console.error(err);
+            res.type("text");
+            return res.status(500).send(`Error in server`);
         }
     }
 }

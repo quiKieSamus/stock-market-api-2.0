@@ -3,6 +3,12 @@ import { getAllUpdates, getAllUpdatesByEmpresa } from "../models/Update.js";
 import { areDatesStringEqual, substractDaysFromDate } from "../utils/utils.js";
 
 export class UpdatesController {
+    /**
+     * empresas
+     * @param {*} req 
+     * @param {*} res 
+     * @returns 
+     */
     static async get(req, res) {
         try {
             const empresas = await getAllEmpresas();
@@ -26,8 +32,9 @@ export class UpdatesController {
             const update = await getAllUpdates(empresa.id);
             return res.json(update);
         } catch (err) {
-            res.status(500).send(`Error in server ${err}`);
-            res.end()
+            console.error(err);
+            res.type("text");
+            res.status(500).send(`Error in server`);
         }
     }
 }
