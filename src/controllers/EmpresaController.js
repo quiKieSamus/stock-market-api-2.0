@@ -1,6 +1,6 @@
 import { getAllEmpresas } from "../models/Empresa.js";
 import { getAllUpdates } from "../models/Update.js";
-import { areDatesStringEqual, getClosestDateFromList, getTimeFormatted, substractDaysFromDate } from "../utils/utils.js";
+import { areDatesStringEqual, formatNumber, getClosestDateFromList, getTimeFormatted, substractDaysFromDate } from "../utils/utils.js";
 
 export class EmpresaController {
     static async get(req, res) {
@@ -62,8 +62,8 @@ export class EmpresaController {
                 return {
                     empresa: {
                         ...empresasUpdate.empresa,
-                        endPrice: newestUpdate?.price ?? {},
-                        startPrice: secondNewestUpdate[secondNewestUpdate.length - 1]?.price ?? newestUpdate
+                        endPrice: formatNumber(newestUpdate?.price) ?? {},
+                        startPrice: formatNumber(secondNewestUpdate[secondNewestUpdate.length - 1]?.price) ?? newestUpdate
                     },
                     updates: {
                         updatesSorted: updatesSorted,
