@@ -62,8 +62,8 @@ export class EmpresaController {
                 return {
                     empresa: {
                         ...empresasUpdate.empresa,
-                        startPrice: newestUpdate?.price ?? {},
-                        endPrice: secondNewestUpdate[secondNewestUpdate.length - 1]?.price ?? newestUpdate
+                        endPrice: newestUpdate?.price ?? {},
+                        startPrice: secondNewestUpdate[secondNewestUpdate.length - 1]?.price ?? newestUpdate
                     },
                     updates: {
                         updatesSorted: updatesSorted,
