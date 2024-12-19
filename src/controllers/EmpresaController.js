@@ -1,6 +1,6 @@
 import { getAllEmpresas } from "../models/Empresa.js";
 import { getAllUpdates } from "../models/Update.js";
-import { areDatesStringEqual, getClosestDateFromList, getTimeFormatted, substractDaysFromDate } from "../utils/utils.js";
+import { areDatesStringEqual, getClosestDateFromList, getTimeFormatted, objectHasAllProperties, substractDaysFromDate } from "../utils/utils.js";
 
 export class EmpresaController {
     /**
@@ -48,7 +48,7 @@ export class EmpresaController {
                 }
             });
 
-            const empresasWithLastPrices = empresasWithUpdates.map((empresasUpdate) => {
+            let empresasWithLastPrices = empresasWithUpdates.map((empresasUpdate) => {
                 const updatesSorted = empresasUpdate.updates.sort((a, b) => new Date(a.dateHour) < new Date(b.dateHour));
                 const newestUpdate = updatesSorted[updatesSorted.length - 1];
                 const secondNewestUpdate = updatesSorted.filter((update) => {
@@ -69,10 +69,30 @@ export class EmpresaController {
                 }
             });
 
-            if (!req.query.simbolo) {
-                return res.json(empresasWithLastPrices);
+            if (req.query.simbolo) {
+                empresasWithLastPrices = empresasWithLastPrices.filter((empresaWithUpdate) => empresaWithUpdate.empresa.symbol == req.query.simbolo);
             }
-            return res.json(empresasWithLastPrices.filter((empresaUpdate) => empresaUpdate.empresa.symbol == req.query.simbolo));
+
+            if (!req.query.date) return res.json(empresasWithLastPrices);
+
+            empresasWithLastPrices = empresasWithLastPrices.map((empresaWithUpdate) => {
+                const updatesInDate = empresaWithUpdate.updates.updatesSorted.filter((updates) => areDatesStringEqual(updates.dateHour.replace(" ", "T"), req.query.date, true));
+                if (updatesInDate.length < 1) return false;
+                if (objectHasAllProperties(updatesInDate[0], ["idEmpresa", "id", "dateHour", "price"])) {
+                    return {
+                        idEmpresa: updatesInDate[updatesInDate.length - 1]?.idEmpresa,
+                        idUpdate: updatesInDate[updatesInDate.length - 1]?.id,
+                        dateHour: updatesInDate[updatesInDate.length - 1]?.dateHour,
+                        price: updatesInDate[updatesInDate.length - 1]?.price
+                    }
+                }
+            }).filter((item) => item);
+
+            if (!empresasWithLastPrices[0]) {
+                res.type("text");
+                return res.status(404).send("Not found");
+            }
+            return res.json(req.query.simbolo ? empresasWithLastPrices[0] : empresasWithLastPrices);
         } catch (err) {
             console.error(err);
             res.type("text");
